@@ -308,6 +308,7 @@ class Encoder1d(nn.Module):
         self, x: Tensor, with_info: bool = False
     ) -> Union[Tensor, Tuple[Tensor, Any]]:
         xs = [x]
+        self.to_in.to(x.device)
         x = self.to_in(x)
         xs += [x]
 
