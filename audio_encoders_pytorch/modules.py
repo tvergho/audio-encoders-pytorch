@@ -625,6 +625,8 @@ class MelSpectrogram(nn.Module):
         # Pad waveform
         waveform = F.pad(waveform, [self.padding] * 2, mode="reflect")
         # Compute STFT
+        print("Synthesizing waveform spectrogram")
+        print(waveform.get_device())
         spectrogram = self.to_spectrogram(waveform)
         # Compute magnitude
         spectrogram = torch.abs(spectrogram).cuda()
