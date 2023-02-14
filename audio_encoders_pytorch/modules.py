@@ -8,6 +8,7 @@ from einops import pack, rearrange, reduce, unpack
 from einops_exts import rearrange_many
 from torch import Tensor
 from torchaudio import transforms
+from functools import partial
 
 from .utils import closest_power_2, default, exists, groupby, prefix_dict, prod, to_list
 
@@ -611,6 +612,7 @@ class MelSpectrogram(nn.Module):
             win_length=win_length,
             center=center,
             power=None,
+            window_fn=partial(torch.hann_window, device="cuda")
         )
 
         self.to_mel_scale = transforms.MelScale(
