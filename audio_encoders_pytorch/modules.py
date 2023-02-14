@@ -615,6 +615,7 @@ class MelSpectrogram(nn.Module):
             power=None,
             window_fn=partial(torch.hann_window, device=device)
         )
+        print("Set window function", device)
 
         self.to_mel_scale = transforms.MelScale(
             n_mels=n_mel_channels, n_stft=n_fft // 2 + 1, sample_rate=sample_rate
@@ -649,8 +650,11 @@ class MelE1d(Encoder1d):
         super().__init__(in_channels=in_channels * mel_channels, **kwargs)
         self.mel = MelSpectrogram(n_mel_channels=mel_channels, device=device, **mel_kwargs)
         self.downsample_factor *= self.mel.hop_length
+        self.device = device
 
     def forward(self, x: Tensor, **kwargs) -> Union[Tensor, Tuple[Tensor, Any]]:  # type: ignore # noqa
+        print("self.device", self.device)
+        print("x.device", x.device)
         mel = rearrange(self.mel(x), "b c f l -> b (c f) l")
         return super().forward(mel, **kwargs)
 
