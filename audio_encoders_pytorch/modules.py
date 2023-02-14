@@ -622,6 +622,9 @@ class MelSpectrogram(nn.Module):
         )
 
     def forward(self, waveform: Tensor) -> Tensor:
+        print("waveform", waveform.device)
+        self.to_spectrogram.to(waveform.device)
+        self.to_mel_scale.to(waveform.device)
         # Pack non-time dimension
         waveform, ps = pack([waveform], "* t")
         # Pad waveform
