@@ -591,6 +591,7 @@ class MAE1d(AutoEncoder1d):
 class MelSpectrogram(nn.Module):
     def __init__(
         self,
+        device: torch.device,
         n_fft: int = 1024,
         hop_length: int = 256,
         win_length: int = 1024,
@@ -612,7 +613,7 @@ class MelSpectrogram(nn.Module):
             win_length=win_length,
             center=center,
             power=None,
-            window_fn=partial(torch.hann_window, device="cuda")
+            window_fn=partial(torch.hann_window, device=device)
         )
 
         self.to_mel_scale = transforms.MelScale(
@@ -625,12 +626,9 @@ class MelSpectrogram(nn.Module):
         # Pad waveform
         waveform = F.pad(waveform, [self.padding] * 2, mode="reflect")
         # Compute STFT
-        print("Synthesizing waveform spectrogram")
-        print(waveform.get_device())
         spectrogram = self.to_spectrogram(waveform)
         # Compute magnitude
-        spectrogram = torch.abs(spectrogram).cuda()
-        print(spectrogram.get_device())
+        spectrogram = torch.abs(spectrogram)
         # Convert to mel scale
         mel_spectrogram = self.to_mel_scale(spectrogram)
         # Normalize
@@ -646,9 +644,9 @@ class MelSpectrogram(nn.Module):
 class MelE1d(Encoder1d):
     """Magnitude Encoder"""
 
-    def __init__(self, in_channels: int, mel_channels: int, **kwargs):
+    def __init__(self, in_channels: int, mel_channels: int, device: torch.device, **kwargs):
         mel_kwargs, kwargs = groupby("mel_", kwargs)
-        super().__init__(in_channels=in_channels * mel_channels, **kwargs)
+        super().__init__(in_channels=in_channels * mel_channels, device=device, **kwargs)
         self.mel = MelSpectrogram(n_mel_channels=mel_channels, **mel_kwargs)
         self.downsample_factor *= self.mel.hop_length
 
