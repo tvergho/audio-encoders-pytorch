@@ -646,8 +646,8 @@ class MelE1d(Encoder1d):
 
     def __init__(self, in_channels: int, mel_channels: int, device: torch.device, **kwargs):
         mel_kwargs, kwargs = groupby("mel_", kwargs)
-        super().__init__(in_channels=in_channels * mel_channels, device=device, **kwargs)
-        self.mel = MelSpectrogram(n_mel_channels=mel_channels, **mel_kwargs)
+        super().__init__(in_channels=in_channels * mel_channels, **kwargs)
+        self.mel = MelSpectrogram(n_mel_channels=mel_channels, device=device, **mel_kwargs)
         self.downsample_factor *= self.mel.hop_length
 
     def forward(self, x: Tensor, **kwargs) -> Union[Tensor, Tuple[Tensor, Any]]:  # type: ignore # noqa
