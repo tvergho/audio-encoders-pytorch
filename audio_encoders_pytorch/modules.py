@@ -591,7 +591,7 @@ class MAE1d(AutoEncoder1d):
 class MelSpectrogram(nn.Module):
     def __init__(
         self,
-        device: torch.device,
+        # device: torch.device,
         n_fft: int = 1024,
         hop_length: int = 256,
         win_length: int = 1024,
@@ -613,9 +613,9 @@ class MelSpectrogram(nn.Module):
             win_length=win_length,
             center=center,
             power=None,
-            window_fn=partial(torch.hann_window, device=device)
+            # window_fn=partial(torch.hann_window, device=device)
         )
-        print("Set window function", device)
+        # print("Set window function", device)
 
         self.to_mel_scale = transforms.MelScale(
             n_mels=n_mel_channels, n_stft=n_fft // 2 + 1, sample_rate=sample_rate
@@ -645,16 +645,14 @@ class MelSpectrogram(nn.Module):
 class MelE1d(Encoder1d):
     """Magnitude Encoder"""
 
-    def __init__(self, in_channels: int, mel_channels: int, device: torch.device, **kwargs):
+    def __init__(self, in_channels: int, mel_channels: int, **kwargs):
         mel_kwargs, kwargs = groupby("mel_", kwargs)
         super().__init__(in_channels=in_channels * mel_channels, **kwargs)
-        self.mel = MelSpectrogram(n_mel_channels=mel_channels, device=device, **mel_kwargs)
+        self.mel = MelSpectrogram(n_mel_channels=mel_channels, **mel_kwargs)
         self.downsample_factor *= self.mel.hop_length
-        self.device = device
+        # self.device = device
 
     def forward(self, x: Tensor, **kwargs) -> Union[Tensor, Tuple[Tensor, Any]]:  # type: ignore # noqa
-        print("self.device", self.device)
-        print("x.device", x.device)
         mel = rearrange(self.mel(x), "b c f l -> b (c f) l")
         return super().forward(mel, **kwargs)
 
