@@ -627,7 +627,8 @@ class MelSpectrogram(nn.Module):
         # Compute STFT
         spectrogram = self.to_spectrogram(waveform)
         # Compute magnitude
-        spectrogram = torch.abs(spectrogram)
+        spectrogram = torch.abs(spectrogram).cuda()
+        print(spectrogram.get_device())
         # Convert to mel scale
         mel_spectrogram = self.to_mel_scale(spectrogram)
         # Normalize
