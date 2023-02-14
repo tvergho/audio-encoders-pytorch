@@ -317,11 +317,13 @@ class Encoder1d(nn.Module):
             x = downsample(x)
             xs += [x]
 
+        self.to_out.to(x.device)
         x = self.to_out(x)
         xs += [x]
         info = dict(xs=xs)
 
         for bottleneck in self.bottlenecks:
+            bottleneck.to(x.device)
             x, info_bottleneck = bottleneck(x, with_info=True)
             info = {**info, **prefix_dict("bottleneck_", info_bottleneck)}
 
