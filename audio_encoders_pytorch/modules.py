@@ -313,6 +313,7 @@ class Encoder1d(nn.Module):
         xs += [x]
 
         for downsample in self.downsamples:
+            downsample.to(x.device)
             x = downsample(x)
             xs += [x]
 
